@@ -15,3 +15,5 @@ john = User(
     height=5.7,
 )
 john.save()
+# embedded
+# reference
