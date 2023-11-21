@@ -53,6 +53,19 @@ class QuestionRepo:
         question_list = Question.objects()
         return list(question_list)
 
+    def update_by_id(self, id: str, new_answers: list) -> Question:
+        question_to_update = self.read_by_id(id)
+        if question_to_update:
+            # for each answer 'a' in new_answers, it creates an Answer object
+            question_to_update.answers = [Answer(answer=a) for a in new_answers]
+            question_to_update.save()
+        return question_to_update
+
+    def delete_by_id(self, identifier: str) -> None:
+        question_to_delete = self.read_by_id(identifier)
+        if question_to_delete:
+            question_to_delete.delete()
+
 
 question_repo = QuestionRepo()
 # new_question = question_repo.create(
@@ -64,10 +77,19 @@ question_repo = QuestionRepo()
 
 # # print(question_object.answers)
 
-question_list = question_repo.read_all()
-for question in question_list:
-    print(question.answers)
+# question_list = question_repo.read_all()
+# for question in question_list:
+#     print(question.answers)
 
 
 # # questions = question_repo.read_all()
 # # print(questions)
+
+# update
+# question_update = question_repo.update_by_id(
+#     id="655c06da2607aa0a9368d0d2", new_answers=["Etobikoke", "Sherbourne"]
+# )
+# print(question_update)
+
+# delete
+question_repo.delete_by_id(identifier="655c06da2607aa0a9368d0d2")
