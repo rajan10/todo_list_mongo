@@ -119,19 +119,20 @@ class Citizen(Document):
     age = IntField()
     email = EmailField()
     phone = StringField(max_length=20)
-    cities = ListField(ReferenceField(City))
+    city = ReferenceField(City)
 
     def __str__(self):
         return "<Citizen: {self.name}>"
 
 
 """Many to Many
-1. Customers and Products
-2. Books and Authors"""
+1. Books and Authors
+2. Customers and Products"""
 
 
 # reference relation
-#many to many
+# many to many
+
 
 class Book(Document):
     title = StringField(max_length=50)
