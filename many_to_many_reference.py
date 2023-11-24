@@ -1,8 +1,6 @@
-    """
-    Many books can be written by  many authors
+"""Many books can be written by  many authors
         1 book can be written by many authors
-        1 author can write many  books
-    """
+        1 author can write many  books"""
 
 
 from enum import Enum
@@ -18,7 +16,7 @@ from mongoengine import (
     ReferenceField,
 )
 
-connect("relation-db")
+connect("relation_db")
 
 
 class Book(Document):
@@ -27,7 +25,7 @@ class Book(Document):
     published_date = DateTimeField()
 
     def __str__(self):
-        return "<Book: {self.title}>"
+        return f"<Book: {self.title}>"
 
 
 class MaritalStatus(Enum):
@@ -41,7 +39,7 @@ class Author(Document):
     marital_staus = EnumField(MaritalStatus)
 
     def __str__(self):
-        return "<Author: {self.name}>"
+        return f"<Author: {self.name}>"
 
 
 class BookAuthor(Document):
@@ -49,7 +47,7 @@ class BookAuthor(Document):
     author = ReferenceField(Author)
 
     def __str__(self):
-        return "<BookAuthor: {self.book}>, <{self.author}>"
+        return f"<BookAuthor: {self.book}>, <{self.author}>"
 
 
 class BookRepo:
@@ -76,6 +74,8 @@ class BookRepo:
 
 
 book_repo = BookRepo()
+# book = book_repo.create(title="Mahabharat", price=222.25, published_date="2023-11-02")
+# print(book)
 
 
 class AuthorRepo:
@@ -85,7 +85,7 @@ class AuthorRepo:
         return author
 
     def read_by_name(self, name: str) -> Author:
-        author = Author.object.get(name=name)
+        author = Author.objects.get(name=name)
         return author
 
     def update_by_name(
@@ -104,38 +104,68 @@ class AuthorRepo:
             author.delete()
 
 
+author_repo = AuthorRepo()
+# author_repo.create(
+#     name="Ved Vyas",
+#     email="ved@gmail.com",
+#     marital_staus=MaritalStatus.UNMARRIED,
+# )
 
-class BookAuthor:
-    def create(self, book: Book, author: Author)->BookAuthor:
-        book_author=BookAuthor(book=book, author=author)
+
+class BookAuthorRepo:
+    def create(self, book: Book, author: Author) -> BookAuthor:
+        book_author = BookAuthor(book=book, author=author)
         book_author.save()
         return book_author
-    
-    def read_by_book(self, book: Book)->BookAuthor:
-        read_book=BookAuthor.objects.get(book=book)
+
+    def read_by_book(self, book: Book) -> BookAuthor:
+        read_book = BookAuthor.objects.get(book=book)
         return read_book
 
-    def read_by_author(self, author: Author)->BookAuthor:
-        read_author=BookAuthor.objects.get(author=author)
+    def read_by_author(self, author: Author) -> BookAuthor:
+        read_author = BookAuthor.objects.get(author=author)
         return read_author
-    
+
     def update_by_book(self, book: Book, author: Author) -> BookAuthor:
-        book= self.read_by_book(book=book)
+        book = self.read_by_book(book=book)
         if book:
-            book.author=author
+            book.author = author
             book.save
         return book
-    
+
     def update_by_author(self, book: Book, author: Author) -> BookAuthor:
-        author= self.read_by_author(author=author)
+        author = self.read_by_author(author=author)
         if author:
-            author.book=book
+            author.book = book
             author.save
         return book
-    
-    def delete_by_id(self, id:str)->None:
-        book_author=BookAuthor.objects.get(_id=id)
+
+    def delete_by_id(self, id: str) -> None:
+        book_author = BookAuthor.objects.get(_id=id)
         if book_author:
             book_author.delete()
-            
-    
+
+
+mahabharat = book_repo.read_by_title(title="Mahabharat")
+bhanukhakta = author_repo.read_by_name(name="Bhanubhakta")
+
+# vedvyas = author_repo.read_by_name(name="Ved Vyas")
+# book_author_repo = BookAuthorRepo()
+# book_author = book_author_repo.create(book=mahabharat, author=vedvyas)
+# print(book_author)
+
+
+# query how many books written by Bhanubhakta?
+# relations = BookAuthor.objects(author=bhanukhakta)
+# for relation in relations:
+#     print(f" Book's Title: {relation.book.title} => price: {relation.book.price}")
+# # print(len(relations))
+
+
+# who has written Mahabaharat?
+
+relations = BookAuthor.objects(book=mahabharat)
+for relation in relations:
+    print(relation.author.name)
+# print(relations)
+# print(len(relations))
